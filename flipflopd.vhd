@@ -8,14 +8,13 @@ end flipflopd;
 
 architecture memory of flipflopd is 
 begin 
-	process(clock, en)
+	process(clock, r)
 	begin
-		wait until clock'event and clock = '1' and en = '1';
-		q <= d;
-	end process;
-	process(r)
-	begin 
-		if (r = '1') then q <= '0'
+		if (clock'event and clock = '1' and en = '1') then
+			q <= d;
+		end if;
+		if (r = '1') then 
+			q <= '0';
 		end if;
 	end process;
 end memory;

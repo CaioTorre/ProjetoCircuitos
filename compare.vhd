@@ -8,7 +8,7 @@ end compare;
 
 architecture whatdo of compare is 
 begin
-	res <= ((inp1(0) xnor inp2(0)) and
+	res <=((inp1(0) xnor inp2(0)) and
 			(inp1(1) xnor inp2(1)) and
 			(inp1(2) xnor inp2(2)) and
 			(inp1(3) xnor inp2(3)) and

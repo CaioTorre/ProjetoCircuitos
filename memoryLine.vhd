@@ -7,7 +7,7 @@ entity memoryLine is
 			Qout: out std_logic_vector(0 to 5));
 end memoryLine;
 
-architecture memory of compare is 
+architecture memory of memoryLine is 
 	component flipflopd
 		port (d, clock, en, r: in std_logic;
 				q 		  : out std_logic);
