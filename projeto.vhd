@@ -22,9 +22,10 @@ architecture cofre of projeto is
 	signal EnterTrigger, PassOK, IsLoggedIn, SystemLockdown, OnKeyUpdate, SetLogin, ResetLogin, NewKey, WrongPass, NewETrig, NewAttempt, ResetLockdown: std_logic;
 	signal senhaAtual: std_logic_vector(0 to 5);
 	signal ultimaTent: std_logic_vector(0 to 5);
-	signal teste: integer range 0 to 64; 
+	--signal teste: integer range 0 to 64; 
 	signal bcd0, bcd1: std_logic_vector(3 downto 0);
-	signal bcd6: std_logic_vector(0 to 7);
+	signal bcdA: std_logic_vector(0 to 7);
+	signal senhaaux: std_logic_vector(0 to 7);
 	signal attempts: std_logic_vector(0 to 2);
 	signal clearE: std_logic;
 	
@@ -80,9 +81,21 @@ begin
 	--dezena(0) <= entradaSENHA(4);
 	--dezena(1) <= entradaSENHA(5);
 	
-	--process(entradaSENHA, dezena, bcd0)
-	--begin
-	--case dezena is
+	process(entradaSENHA, chaveE)
+	begin
+		bcdA <= ("00" & entradaSENHA);
+		senhaaux <= bcdA;
+		bcd0 <= "0000";
+		bcd1 <= "0000";
+
+	while (bcdA > 9) loop
+		bcdA <= senhaaux - 10;
+		senhaaux <= bcd1 + 1;
+		bcd1 <= senhaaux;
+		senhaaux <= bcdA;
+		end loop;
+		bcd1 <= senhaaux(0 to 3);
+		end process;
 	--	when "01" => bcd6 <= ("00" & entradaSENHA) + 6;
 	--	when "10" => bcd6 <= ("00" & entradaSENHA) + 2;
 	--	when "11" => bcd6 <= ("00" & entradaSENHA) + 8;
@@ -90,10 +103,9 @@ begin
 	--	end case;		
 	--end process;
 	
-	--bcd0(0) <= bcd6(0);
-	--bcd0(1) <= bcd6(1);
-	--bcd0(2) <= bcd6(2);
-	--bcd0(3) <= bcd6(3);
+--	bcd0 <= bcdA(0 to 3);
+--	bcd1 <= bcdA(4 to 7);
+	
 	
 
 		
