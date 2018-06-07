@@ -15,6 +15,15 @@ entity projeto is
 end projeto;
 
 architecture cofre of projeto is
+--	signal EnterTrigger, PassOK, IsLoggedIn, SystemLockdown, OnKeyUpdate, SetLogin, ResetLogin, NewKey, WrongPass, NewETrig, NewAttempt, ajuste, ResetLockdown, ClearE: std_logic;
+--	signal senhaAtual: std_logic_vector(0 to 5);
+--	signal ultimaTent: std_logic_vector(0 to 5);
+--	signal bcd0, bcd1: std_logic_vector(0 to 3);
+--	signal bcdA: std_logic_vector(0 to 7);
+--	signal senhaaux: std_logic_vector(0 to 7);
+--	--signal bcd6: std_logic_vector(0 to 7);
+--	signal attempts: std_logic_vector(0 to 2);
+----	signal dezena: std_logic_vector(0 to 1);
 	signal EnterTrigger, PassOK, IsLoggedIn, SystemLockdown, OnKeyUpdate, SetLogin, ResetLogin, NewKey, WrongPass, NewETrig, NewAttempt, ajuste, ResetLockdown: std_logic;
 	signal senhaAtual: std_logic_vector(0 to 5);
 	signal ultimaTent: std_logic_vector(0 to 5);
@@ -67,26 +76,33 @@ begin
 	
 	SystemLockdown <= not ((attempts(0) and attempts(1)) and attempts(2));
 	ResetLockdown <= IsLoggedIn or resetStrikes;
-	dezena(0) <= entradaSENHA(4);
-	dezena(1) <= entradaSENHA(5);
-	
-	process(entradaSENHA, dezena, bcd0)
-	begin
-	case dezena is
-		when "01" => bcd6 <= ("00" & entradaSENHA) + 6;
-		when "10" => bcd6 <= ("00" & entradaSENHA) + 2;
-		when "11" => bcd6 <= ("00" & entradaSENHA) + 8;
-		when "00" => bcd6 <= ("00" & entradaSENHA);
-		end case;		
-	end process;
-	
-	bcd0(0) <= bcd6(0);
-	bcd0(1) <= bcd6(1);
-	bcd0(2) <= bcd6(2);
-	bcd0(3) <= bcd6(3);
 		
-	--num0: bcd port map (bcd0, numero0);
-	--num1: bcd port map (bcd1, numero1);
+	num0: bcd port map (bcd0, numero0);
+	num1: bcd port map (bcd1, numero1);
+
+--	process(entradaSENHA, chaveE)
+--	begin
+--		bcdA(6 to 7) <= "00";
+--		bcdA(0) <= entradaSENHA(5);
+--		bcdA(1) <= entradaSENHA(4);
+--		bcdA(2) <= entradaSENHA(3);
+--		bcdA(3) <= entradaSENHA(2);
+--		bcdA(4) <= entradaSENHA(1);
+--		bcdA(5) <= entradaSENHA(0);
+--		senhaaux <= bcdA;
+--		bcd0 <= "0000";
+--		bcd1 <= "0000";
+--
+--		display: for i in 0 to 6 loop
+--			if bcdA > "00001001" then
+--			bcdA <= senhaaux - "00001010";
+--			senhaaux <= ("0000" & bcd1) + "00000001";
+--			bcd1 <= senhaaux (4 to 7);
+--			senhaaux <= bcdA;
+--			end if;
+--		end loop;
+--		bcd0 <= senhaaux(4 to 7);
+--	end process;
 	
 	ledEstado <= IsLoggedIn;
 	ledErro <= not SystemLockdown;
