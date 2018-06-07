@@ -4,16 +4,16 @@ use ieee.std_logic_unsigned.all;
 
 entity bcd is
 	port (code: in  std_logic_vector(0 to 3);
-	      x: out std_logic_vector(0 to 3);
+	      --x: out std_logic_vector(0 to 3);
 			leds: out std_logic_vector(0 to 6));
 end bcd;
 
 architecture decoder of bcd is 
- signal ajuste: std_logic
+ --signal ajuste: std_logic
 begin
-	x <= code;
-	ajuste  <= '1' when (x < 9) else '0';	
-   code <= x when (ajuste = '0') else x + 6;
+	--x <= code;
+	--ajuste  <= '1' when (x < 9) else '0';	
+   --code <= x when (ajuste = '0') else x + 6;
 	with code select
 		leds <= 	"0000001" when "0000",
 					"1001111" when "0001",

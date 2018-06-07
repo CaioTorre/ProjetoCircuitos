@@ -65,25 +65,25 @@ begin
 	strike2: flipflopd port map (attempts(0), EnterTrigger, '1', ResetLockdown, attempts(1));
 	strike3: flipflopd port map (attempts(1), EnterTrigger, '1', ResetLockdown, attempts(2));
 	
-	SystemLockdown <= ((attempts(0) nand attempts(1)) nand attempts(2));
+	SystemLockdown <= not ((attempts(0) and attempts(1)) and attempts(2));
 	ResetLockdown <= IsLoggedIn or resetStrikes;
-	dezena(0) <= entradaSENHA(4);
-	dezena(1) <= entradaSENHA(5);
+	--dezena(0) <= entradaSENHA(4);
+	--dezena(1) <= entradaSENHA(5);
 	
-	process(entradaSENHA, dezena, bcd0)
-	begin
-	case dezena is
-		when "01" => bcd6 <= ("00" & entradaSENHA) + 6;
-		when "10" => bcd6 <= ("00" & entradaSENHA) + 2;
-		when "11" => bcd6 <= ("00" & entradaSENHA) + 8;
-		when "00" => bcd6 <= ("00" & entradaSENHA);
-		end case;		
-	end process;
+	--process(entradaSENHA, dezena, bcd0)
+	--begin
+	--case dezena is
+	--	when "01" => bcd6 <= ("00" & entradaSENHA) + 6;
+	--	when "10" => bcd6 <= ("00" & entradaSENHA) + 2;
+	--	when "11" => bcd6 <= ("00" & entradaSENHA) + 8;
+	--	when "00" => bcd6 <= ("00" & entradaSENHA);
+	--	end case;		
+	--end process;
 	
-	bcd0(0) <= bcd6(0);
-	bcd0(1) <= bcd6(1);
-	bcd0(2) <= bcd6(2);
-	bcd0(3) <= bcd6(3);
+	--bcd0(0) <= bcd6(0);
+	--bcd0(1) <= bcd6(1);
+	--bcd0(2) <= bcd6(2);
+	--bcd0(3) <= bcd6(3);
 	
 
 		

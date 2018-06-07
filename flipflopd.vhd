@@ -10,7 +10,7 @@ architecture memory of flipflopd is
 begin 
 	process(clock, r)
 	begin
-		if (clock'event and clock = '1' and en = '1') then
+		if (clock'event and rising_edge(clock) and en = '1') then
 			q <= d;
 		end if;
 		if (r = '1') then 
