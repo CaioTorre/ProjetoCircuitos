@@ -11,7 +11,9 @@ entity projeto is
 			ledErro:		out std_logic;
 			numero0:		out std_logic_vector(0 to 6);
 			numero1: 	out std_logic_vector(0 to 6);
-			senhaOKLED: out std_logic);
+			senhaOKLED: out std_logic;
+			lastA: 	out std_logic_vector(0 to 5);
+			keyUpdated: out std_logic);
 end projeto;
 
 architecture cofre of projeto is
@@ -21,7 +23,8 @@ architecture cofre of projeto is
 	signal bcd0, bcd1: std_logic_vector(0 to 3);
 	signal bcd6: std_logic_vector(0 to 7);
 	signal attempts: std_logic_vector(0 to 2);
-	signal dezena: std_logic_vector(0 to 1);
+	signal clearE: std_logic;
+	--signal dezena: std_logic_vector(0 to 1);
 	component bcd
 		port (code: in  std_logic_vector(0 to 3);
 				leds: out std_logic_vector(0 to 6));
@@ -50,23 +53,24 @@ begin
 	ResetLogin <= not EnterTrigger;
 	
 	guardaSenha: memoryLine port map (entradaSENHA, NewKey, IsLoggedIn, '0', senhaAtual);
-	tentaE: flipflopd port map (   EnterTrigger, OnKeyUpdate, '1', IsLoggedIn, NewETrig);
+	tentaE: flipflopd port map ('1', EnterTrigger, '1', ClearE, NewETrig);
+	ClearE <= IsLoggedIn or (not EnterTrigger);
 	
-	guardaUltimaTent: memoryLine port map (entradaSENHA, OnKeyUpdate, '1', '0', ultimaTent);
-	checkForNewAttempt: compare port map (entradaSENHA, ultimaTent, NewAttempt);
-	
-	process(EnterTrigger)
-	begin 
-		OnKeyUpdate <= ((EnterTrigger and ((NewETrig xor EnterTrigger))) or (EnterTrigger and (not NewAttempt)));
-	end process;
+	guardaUltimaTentativa: memoryLine port map (entradaSENHA, OnKeyUpdate, '1', '0', ultimaTent);
+	checkForNewAttempt: compare port map (entradaSENHA, ultimaTent, NewAttempt);	
+		
+	OnKeyUpdate <= (not NewAttempt and EnterTrigger) or NewETrig;
 	
 	WrongPass <= not PassOK;
-	strike1: flipflopd port map (  WrongPass, EnterTrigger, '1', ResetLockdown, attempts(0));
-	strike2: flipflopd port map (attempts(0), EnterTrigger, '1', ResetLockdown, attempts(1));
-	strike3: flipflopd port map (attempts(1), EnterTrigger, '1', ResetLockdown, attempts(2));
+	strike1: flipflopd port map (  WrongPass, OnKeyUpdate, '1', ResetLockdown, attempts(0));
+	strike2: flipflopd port map (attempts(0), OnKeyUpdate, '1', ResetLockdown, attempts(1));
+	strike3: flipflopd port map (attempts(1), OnKeyUpdate, '1', ResetLockdown, attempts(2));
 	
 	SystemLockdown <= not ((attempts(0) and attempts(1)) and attempts(2));
 	ResetLockdown <= IsLoggedIn or resetStrikes;
+	
+	lastA <= ultimaTent;
+	keyUpdated <= OnKeyUpdate;
 	--dezena(0) <= entradaSENHA(4);
 	--dezena(1) <= entradaSENHA(5);
 	
