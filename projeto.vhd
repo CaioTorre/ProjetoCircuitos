@@ -7,10 +7,13 @@ entity projeto is
 			chaveE:			in std_logic;
 			chaveS: 		in std_logic;
 			resetStrikes:	in std_logic;
+			masterClock: in std_logic;
 			ledEstado: 		out std_logic;
 			ledErro:		out std_logic;
 			numero0:		out std_logic_vector(0 to 6);
 			numero1: 	out std_logic_vector(0 to 6);
+			lcd_rw, lcd_rs, lcd_e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
+			lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0);
 			senhaOKLED: out std_logic);
 end projeto;
 
@@ -20,6 +23,8 @@ architecture cofre of projeto is
 	signal ultimaTent: std_logic_vector(0 to 5);
 	signal bcd0, bcd1: std_logic_vector(0 to 3);
 	signal attempts: std_logic_vector(0 to 3);
+	signal LCD_BUSY: std_logic;
+	signal LCD_UPDT: std_logic;
 	component bcd
 		port (code: in  std_logic_vector(0 to 3);
 				leds: out std_logic_vector(0 to 6));
@@ -44,7 +49,18 @@ architecture cofre of projeto is
 			reset: in std_logic;
 			output: out std_logic_vector(0 to 1));
 	end component;
+	component LCDHandler is
+		port (
+			clock: in std_logic;
+			updateScreen: in std_logic;
+			loginSuccess: in std_logic;
+			busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
+			rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
+			lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0));
+	end component;
 begin
+	masterHandler: LCDHandler port map (masterClock, LCD_UPDT, IsLoggedIn, LCD_BUSY, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
+	LCD_UPDT <= IsLoggedIn;
 	senhaOKLED <= PassOK;
 	checkPass: compare port map (entradaSENHA, senhaAtual, PassOK);
 	
