@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
---use ieee.NUMERIC_STD.all;
 
 entity projeto is 
 	port (entradaSENHA: 	in std_logic_vector(0 to 5);
@@ -12,24 +11,16 @@ entity projeto is
 			ledErro:		out std_logic;
 			numero0:		out std_logic_vector(0 to 6);
 			numero1: 	out std_logic_vector(0 to 6);
-			senhaOKLED: out std_logic;
-			lastA: 	out std_logic_vector(0 to 5);
-			keyUpdated: out std_logic);
-		   --constant dez: unsigned(3 downto 0) := to_unsigned(1,10);
+			senhaOKLED: out std_logic);
 end projeto;
 
 architecture cofre of projeto is
-	signal EnterTrigger, PassOK, IsLoggedIn, SystemLockdown, OnKeyUpdate, SetLogin, ResetLogin, NewKey, WrongPass, NewETrig, NewAttempt, ResetLockdown: std_logic;
+	signal EnterTrigger, PassOK, IsLoggedIn, SystemLockdown, OnKeyUpdate, SetLogin, ResetLogin, NewKey, WrongPass, NewETrig, NewAttempt, ajuste, ResetLockdown: std_logic;
 	signal senhaAtual: std_logic_vector(0 to 5);
 	signal ultimaTent: std_logic_vector(0 to 5);
-	--signal teste: integer range 0 to 64; 
-	signal bcd0, bcd1: std_logic_vector(3 downto 0);
-	signal bcdA: std_logic_vector(0 to 7);
-	signal senhaaux: std_logic_vector(0 to 7);
-	signal attempts: std_logic_vector(0 to 2);
-	signal clearE: std_logic;
-	
-	
+	signal bcd0, bcd1: std_logic_vector(0 to 3) := "0000";
+	signal auxiliar, aux1: std_logic_vector(0 to 7);
+	signal attempts: std_logic_vector(0 to 3);
 	component bcd
 		port (code: in  std_logic_vector(0 to 3);
 				leds: out std_logic_vector(0 to 6));
@@ -47,6 +38,13 @@ architecture cofre of projeto is
 				Clock, Enable, Reset: in std_logic;
 				Qout: out std_logic_vector(0 to 5));
 	end component;
+	component upcounter is 
+		port (
+			clock: in std_logic;
+			enable: in std_logic;
+			reset: in std_logic;
+			output: out std_logic_vector(0 to 1));
+	end component;
 begin
 	senhaOKLED <= PassOK;
 	checkPass: compare port map (entradaSENHA, senhaAtual, PassOK);
@@ -58,61 +56,40 @@ begin
 	ResetLogin <= not EnterTrigger;
 	
 	guardaSenha: memoryLine port map (entradaSENHA, NewKey, IsLoggedIn, '0', senhaAtual);
-	tentaE: flipflopd port map ('1', EnterTrigger, '1', ClearE, NewETrig);
-	ClearE <= IsLoggedIn or (not EnterTrigger);
+	tentaE: flipflopd port map (EnterTrigger, OnKeyUpdate, '1', IsLoggedIn, NewETrig);
 	
-	guardaUltimaTentativa: memoryLine port map (entradaSENHA, OnKeyUpdate, '1', '0', ultimaTent);
-	checkForNewAttempt: compare port map (entradaSENHA, ultimaTent, NewAttempt);	
-		
-	OnKeyUpdate <= (not NewAttempt and EnterTrigger) or NewETrig;
+	guardaUltimaTent: memoryLine port map (entradaSENHA, OnKeyUpdate, '1', '0', ultimaTent);
+	checkForNewAttempt: compare port map (entradaSENHA, ultimaTent, NewAttempt);
+	
+	process(EnterTrigger)
+	begin 
+		OnKeyUpdate <= EnterTrigger and (NewETrig nand NewAttempt);
+	end process;
 	
 	WrongPass <= not PassOK;
-	strike1: flipflopd port map (  WrongPass, OnKeyUpdate, '1', ResetLockdown, attempts(0));
-	strike2: flipflopd port map (attempts(0), OnKeyUpdate, '1', ResetLockdown, attempts(1));
-	strike3: flipflopd port map (attempts(1), OnKeyUpdate, '1', ResetLockdown, attempts(2));
+	--countLockdown: upcounter port map (OnKeyUpdate, not IsLoggedIn, ResetLockdown, attempts);
+	strike1: flipflopd port map (  WrongPass, EnterTrigger, not IsLoggedIn, ResetLockdown, attempts(0));
+	strike2: flipflopd port map (attempts(0), EnterTrigger, not IsLoggedIn, ResetLockdown, attempts(1));
+	strike3: flipflopd port map (attempts(1), EnterTrigger, not IsLoggedIn, ResetLockdown, attempts(2));
 	
-	SystemLockdown <= not ((attempts(0) and attempts(1)) and attempts(2));
-	ResetLockdown <= IsLoggedIn or resetStrikes;
+	SystemLockdown <= not (attempts(0) and attempts(1) and attempts(2));
+	ResetLockdown <= IsLoggedIn or not resetStrikes;
 	
-	lastA <= ultimaTent;
-	keyUpdated <= OnKeyUpdate;
-	teste <= while (teste<=entradaSENHA) entradaSENHA - 10;
-	--teste <= senha / 10;
-	--dezena(0) <= entradaSENHA(4);
-	--dezena(1) <= entradaSENHA(5);
-	
-	process(entradaSENHA, chaveE)
-	begin
-		bcdA <= ("00" & entradaSENHA);
-		senhaaux <= bcdA;
-		bcd0 <= "0000";
-		bcd1 <= "0000";
-
-	while (bcdA > 9) loop
-		bcdA <= senhaaux - 10;
-		senhaaux <= bcd1 + 1;
-		bcd1 <= senhaaux;
-		senhaaux <= bcdA;
-		end loop;
-		bcd1 <= senhaaux(0 to 3);
-		end process;
-	--	when "01" => bcd6 <= ("00" & entradaSENHA) + 6;
-	--	when "10" => bcd6 <= ("00" & entradaSENHA) + 2;
-	--	when "11" => bcd6 <= ("00" & entradaSENHA) + 8;
-	--	when "00" => bcd6 <= ("00" & entradaSENHA);
-	--	end case;		
-	--end process;
-	
---	bcd0 <= bcdA(0 to 3);
---	bcd1 <= bcdA(4 to 7);
-	
-	
-
+	process(EnterTrigger, entradaSENHA)
+		begin
+		auxiliar <= ("0000" & entradaSENHA (2 to 5));
+		aux1 <= auxiliar + "00000110";
+		bcd0 <= aux1(4 to 7);
+--		if (bcd0 > "1001") then
+--		bcd1 <= "0001";
+--		auxiliar <= ("0000" & entradaSENHA (2 to 5)) + "00000110";
+--		bcd0 <= auxiliar (4 to 7);
+--		
+--		end if;
+	end process;
 		
 	num0: bcd port map (bcd0, numero0);
 	num1: bcd port map (bcd1, numero1);
-
-	
 	
 	ledEstado <= IsLoggedIn;
 	ledErro <= not SystemLockdown;
