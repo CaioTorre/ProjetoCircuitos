@@ -53,7 +53,7 @@ architecture cofre of projeto is
 	component LCDHandler is
 		port (
 			clock: in std_logic;
-			updateScreen: in std_logic;
+			--updateScreen: in std_logic;
 			system_state: in std_logic_vector(0 to 1);
 			busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
 			rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
@@ -62,7 +62,7 @@ architecture cofre of projeto is
 begin
 	process(IsLoggedIn, SystemLockdown, EnterTrigger)
 	begin
-		if (SystemLockdown = '1') then 
+		if (SystemLockdown = '0') then 
 			SYS_STATE <= "11";
 		elsif (IsLoggedIn = '1') then 
 			SYS_STATE <= "10";
@@ -72,8 +72,9 @@ begin
 			SYS_STATE <= "00";
 		end if;
 	end process;
-	masterHandler: LCDHandler port map (masterClock, LCD_UPDT, SYS_STATE, LCD_BUSY, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
-	LCD_UPDT <= IsLoggedIn;
+	masterHandler: LCDHandler port map (masterClock, SYS_STATE, LCD_BUSY, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
+	--LCD_UPDT <= IsLoggedIn;
+	LCD_UPDT <= '1';
 	senhaOKLED <= PassOK;
 	checkPass: compare port map (entradaSENHA, senhaAtual, PassOK);
 	

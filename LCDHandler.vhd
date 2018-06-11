@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity LCDHandler is 
 	port (
 		clock: in std_logic;
-		updateScreen: in std_logic;
+		--updateScreen: in std_logic;
 		--loginSuccess: in std_logic;
 		system_state: in std_logic_vector(0 to 1);
 		busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
@@ -23,6 +23,8 @@ architecture handle of LCDHandler is
 	signal con_rs, con_rw: std_logic;
 	signal con_data: std_logic_vector(7 downto 0);
 	signal con_busy: std_logic;
+	--signal printing: std_logic;
+	signal updateScreen: std_logic;
 	component lcd_controller is
 		PORT(
 		 clk        : IN    STD_LOGIC;  --system clock
@@ -36,6 +38,23 @@ architecture handle of LCDHandler is
 begin
 	--con_bus <= con_rs & con_rw & con_data;
 	lcdMaster: lcd_controller port map (clock, '1', con_en, con_bus, con_busy, rw, rs, e, lcd_dataout);
+	process(system_state(0))
+	begin
+		--cpos := 0;
+		updateScreen <= '1';
+	end process;
+	process(system_state(1))
+	begin
+		--cpos := 0;
+		updateScreen <= '1';
+	end process;
+	--process(updateScreen)
+	--begin
+		--if (updateScreen'event and updateScreen = '0') then
+			--cpos := 0;
+			--con_en <= '0';
+		--end if;
+	--end process;
 	process(clock)
 		variable cpos: integer range 0 to 16 := 0;
 	begin
@@ -44,6 +63,8 @@ begin
 				con_en <= '1';
 				if (cpos < 16) then 
 					cpos := cpos + 1;
+				else
+					cpos := 0;
 				end if;
 				if (system_state = "00") then --AWAITING INPUT
 					case cpos is
@@ -61,8 +82,14 @@ begin
 						when 12 => con_bus <= "1001101110"; --n
 						when 13 => con_bus <= "1001101000"; --h
 						when 14 => con_bus <= "1001100001"; --a
-						when 15 => cpos := 0;
-						when others => con_en <= '0';
+						--when 15 => 
+							--updateScreen <= '0'; 
+							--cpos := 0;
+						--when 15 => cpos := 0;
+						when others => 
+							--con_en <= '0';
+							updateScreen <= '0'; 
+							--cpos := 0;
 					end case;
 				end if;
 				if (system_state = "01") then --INCORRECT PASS
@@ -81,8 +108,14 @@ begin
 						when 12 => con_bus <= "1001101001"; --i
 						when 13 => con_bus <= "1001100100"; --d
 						when 14 => con_bus <= "1001100001"; --a
-						when 15 => cpos := 0;
-						when others => con_en <= '0';
+						--when 15 => 
+							--updateScreen <= '0'; 
+							--cpos := 0;
+						--when 15 => cpos := 0;
+						when others => 
+							--con_en <= '0';
+							updateScreen <= '0'; 
+							--cpos := 0;
 					end case;
 				end if;
 				if (system_state = "10") then --LOGIN OK
@@ -99,9 +132,15 @@ begin
 						when 10 => con_bus <= "1000101000"; --( 
 						when 11 => con_bus <= "1001100001"; --a
 						when 12 => con_bus <= "1000101001"; --)
-						when 13 =>  con_bus <= "1000100001"; --!
-						when 14 => cpos := 0;
-						when others => con_en <= '0';
+						when 13 => con_bus <= "1000100001"; --!
+						--when 14 => 
+							--updateScreen <= '0'; 
+							--cpos := 0;
+						--when 14 => cpos := 0;
+						when others => 
+							--con_en <= '0';
+							updateScreen <= '0'; 
+							--cpos := 0;
 					end case;
 				end if;
 				if (system_state = "11") then --LOCKDOWN
@@ -114,13 +153,22 @@ begin
 						when 6 =>  con_bus <= "1001100100"; --d
 						when 7 =>  con_bus <= "1001101111"; --o
 						when 8 =>  con_bus <= "1000100001"; --!
-						when 9 => cpos := 0;
-						when others => con_en <= '0';
+						--when 9 =>  
+							--updateScreen <= '0'; 
+							--cpos := 0;
+						--when 9 => cpos := 0;
+						when others => 
+							--con_en <= '0';-- cpos := 0;
+							updateScreen <= '0'; 
+							--cpos := 0;
 					end case;
 				end if;
 			else 
 				con_en <= '0';
 			end if;
+		--else 
+			--cpos := 0;
+			--con_en <= '0';
 		end if;
 	end process;
 end handle;
