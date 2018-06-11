@@ -25,6 +25,7 @@ architecture cofre of projeto is
 	signal attempts: std_logic_vector(0 to 3);
 	signal LCD_BUSY: std_logic;
 	signal LCD_UPDT: std_logic;
+	signal SYS_STATE: std_logic_vector(0 to 1);
 	component bcd
 		port (code: in  std_logic_vector(0 to 3);
 				leds: out std_logic_vector(0 to 6));
@@ -53,13 +54,25 @@ architecture cofre of projeto is
 		port (
 			clock: in std_logic;
 			updateScreen: in std_logic;
-			loginSuccess: in std_logic;
+			system_state: in std_logic_vector(0 to 1);
 			busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
 			rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
 			lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0));
 	end component;
 begin
-	masterHandler: LCDHandler port map (masterClock, LCD_UPDT, IsLoggedIn, LCD_BUSY, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
+	process(IsLoggedIn, SystemLockdown, EnterTrigger)
+	begin
+		if (SystemLockdown = '1') then 
+			SYS_STATE <= "11";
+		elsif (IsLoggedIn = '1') then 
+			SYS_STATE <= "10";
+		elsif (EnterTrigger = '1') then 
+			SYS_STATE <= "01";
+		else
+			SYS_STATE <= "00";
+		end if;
+	end process;
+	masterHandler: LCDHandler port map (masterClock, LCD_UPDT, SYS_STATE, LCD_BUSY, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
 	LCD_UPDT <= IsLoggedIn;
 	senhaOKLED <= PassOK;
 	checkPass: compare port map (entradaSENHA, senhaAtual, PassOK);
