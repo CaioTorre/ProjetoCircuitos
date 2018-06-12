@@ -4,8 +4,7 @@ use ieee.std_logic_1164.all;
 entity LCDHandler is 
 	port (
 		clock: in std_logic;
-		--updateScreen: in std_logic;
-		--loginSuccess: in std_logic;
+		storePrint:	in std_logic;
 		system_state: in std_logic_vector(0 to 1);
 		busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
 		rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
@@ -13,18 +12,14 @@ entity LCDHandler is
 end LCDHandler;
 
 architecture handle of LCDHandler is
---signal lcd_busy: std_logic;
---signal lcd_data: std_logic_vector(0 to 7);
---signal lcd_en: std_logic;
---signal lcd_rw: std_logic;
---signal lcd_rs: std_logic;
 	signal con_en: std_logic;
 	signal con_bus: std_logic_vector(9 downto 0);
 	signal con_rs, con_rw: std_logic;
 	signal con_data: std_logic_vector(7 downto 0);
 	signal con_busy: std_logic;
-	--signal printing: std_logic;
 	signal updateScreen: std_logic;
+	signal enable_write: std_logic;
+	
 	component lcd_controller is
 		PORT(
 		 clk        : IN    STD_LOGIC;  --system clock
@@ -38,16 +33,16 @@ architecture handle of LCDHandler is
 begin
 	--con_bus <= con_rs & con_rw & con_data;
 	lcdMaster: lcd_controller port map (clock, '1', con_en, con_bus, con_busy, rw, rs, e, lcd_dataout);
-	process(system_state(0))
-	begin
-		--cpos := 0;
-		updateScreen <= '1';
-	end process;
-	process(system_state(1))
-	begin
-		--cpos := 0;
-		updateScreen <= '1';
-	end process;
+--	process(system_state(0))
+--	begin
+--		--cpos := 0;
+--		updateScreen <= '1';
+--	end process;
+--	process(system_state(1))
+--	begin
+--		--cpos := 0;
+--		updateScreen <= '1';
+--	end process;
 	--process(updateScreen)
 	--begin
 		--if (updateScreen'event and updateScreen = '0') then
@@ -55,16 +50,24 @@ begin
 			--con_en <= '0';
 		--end if;
 	--end process;
-	process(clock)
-		variable cpos: integer range 0 to 16 := 0;
+	process(clock, system_state)
+		variable cpos: integer range 0 to 20 := 0;
 	begin
-		if (clock'event and clock = '1' and updateScreen = '1') then --and updateScreen'event
-			if (con_busy = '0' and con_en = '0') then 
+		
+		--if (system_state(0)'event and clearScreen = '1') then
+		
+		if (clock'event and clock = '1') then --and updateScreen'event
+			if (storePrint = '0') then 
 				con_en <= '1';
-				if (cpos < 16) then 
+				con_bus <= "0000000001";
+				cpos := 0;
+				con_en <= '0';
+			elsif (con_busy = '0' and con_en = '0' and cpos < 20) then 
+				con_en <= '1';
+				if (cpos < 20) then 
 					cpos := cpos + 1;
-				else
-					cpos := 0;
+				--else
+					--cpos := 0;
 				end if;
 				if (system_state = "00") then --AWAITING INPUT
 					case cpos is
@@ -82,13 +85,18 @@ begin
 						when 12 => con_bus <= "1001101110"; --n
 						when 13 => con_bus <= "1001101000"; --h
 						when 14 => con_bus <= "1001100001"; --a
+						when 15 => con_bus <= "1000100000"; -- 
+						when 16 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "1000100000"; -- 
+						
 						--when 15 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
 						--when 15 => cpos := 0;
 						when others => 
-							--con_en <= '0';
-							updateScreen <= '0'; 
+							con_en <= '0';
+							--updateScreen <= '0'; 
 							--cpos := 0;
 					end case;
 				end if;
@@ -108,13 +116,17 @@ begin
 						when 12 => con_bus <= "1001101001"; --i
 						when 13 => con_bus <= "1001100100"; --d
 						when 14 => con_bus <= "1001100001"; --a
+						when 15 => con_bus <= "1000100000"; -- 
+						when 16 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "1000100000"; -- 
 						--when 15 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
 						--when 15 => cpos := 0;
 						when others => 
-							--con_en <= '0';
-							updateScreen <= '0'; 
+							con_en <= '0';
+							--updateScreen <= '0'; 
 							--cpos := 0;
 					end case;
 				end if;
@@ -133,13 +145,18 @@ begin
 						when 11 => con_bus <= "1001100001"; --a
 						when 12 => con_bus <= "1000101001"; --)
 						when 13 => con_bus <= "1000100001"; --!
+						when 14 => con_bus <= "1000100000"; -- 
+						when 15 => con_bus <= "1000100000"; -- 
+						when 16 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "1000100000"; -- 
 						--when 14 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
 						--when 14 => cpos := 0;
 						when others => 
-							--con_en <= '0';
-							updateScreen <= '0'; 
+							con_en <= '0';
+							--updateScreen <= '0'; 
 							--cpos := 0;
 					end case;
 				end if;
@@ -153,13 +170,23 @@ begin
 						when 6 =>  con_bus <= "1001100100"; --d
 						when 7 =>  con_bus <= "1001101111"; --o
 						when 8 =>  con_bus <= "1000100001"; --!
+						when 9  => con_bus <= "1000100000"; -- 
+						when 10 => con_bus <= "1000100000"; -- 
+						when 11 => con_bus <= "1000100000"; -- 
+						when 12 => con_bus <= "1000100000"; -- 
+						when 13 => con_bus <= "1000100000"; -- 
+						when 14 => con_bus <= "1000100000"; -- 
+						when 15 => con_bus <= "1000100000"; -- 
+						when 16 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "1000100000"; -- 
 						--when 9 =>  
 							--updateScreen <= '0'; 
 							--cpos := 0;
 						--when 9 => cpos := 0;
 						when others => 
-							--con_en <= '0';-- cpos := 0;
-							updateScreen <= '0'; 
+							con_en <= '0';-- cpos := 0;
+							--updateScreen <= '0'; 
 							--cpos := 0;
 					end case;
 				end if;
