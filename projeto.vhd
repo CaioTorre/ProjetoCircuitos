@@ -38,6 +38,15 @@ architecture cofre of projeto is
 		port (inp1, inp2: in std_logic_vector(0 to 5);
 				res: out std_logic);
 	end component;
+	
+	component LCDHandler
+		port (
+			clock: in std_logic;
+			system_state: in std_logic_vector(0 to 1);
+			--busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
+			rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
+			lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0));
+	end component;
 
 	signal PassEQ:	std_logic := '1';
 	signal PassOK:	std_logic := '0';
@@ -49,6 +58,8 @@ architecture cofre of projeto is
 	signal AUX0, AUX1, AUX2, aux3, AUXILIAR, RESULT: std_logic_vector(0 to 7);
 
 	signal storeA: std_logic_vector(0 to 1) := "00";
+	
+	signal Sys_ST:	std_logic_vector(0 to 1) := "00";
 begin
 	compareLast:	compare port map(entradaSENHA, lastK, PassEQ);
 	compareKey:		compare port map(entradaSENHA, storeK, PassOK);
@@ -60,6 +71,7 @@ begin
 		IF(masterClock'EVENT and masterClock = '1') THEN
 			CASE state IS 
 				WHEN waiting_input =>
+					Sys_ST <= "00";
 					ledEstado <= '0';
 					IF (chaveE = '1' and lastE = '0') THEN 
 						state <= test_input;
@@ -85,6 +97,7 @@ begin
 					END IF;
 					
 				WHEN login_success =>
+					Sys_ST <= "10";
 					ledEstado <= '1';
 					attempts := 0;
 					IF (chaveE = '0') THEN 
@@ -95,6 +108,7 @@ begin
 					END IF;
 					
 				WHEN read_new_key =>
+					Sys_ST <= "01";
 					IF (chaveE = '0') THEN 
 						state <= waiting_input;
 					ELSIF (chaveS = '0') THEN
@@ -103,6 +117,7 @@ begin
 					END IF;
 					
 				WHEN out_of_attempts =>
+					Sys_ST <= "11";
 					ledErro <= '1';
 					IF (resetStrikes = '0') THEN --Pushbutton invertido
 						ledErro <= '0';
@@ -118,6 +133,13 @@ begin
 			when 2 => storeA <= "10";
 			when others => storeA <= "11";
 		end case;
+		
+		if (resetStrikes = '0') then
+			state <= waiting_input;
+			attempts := 0;
+			ledErro <= '0';
+			ledEstado <= '0';
+		end if;
 	END PROCESS;
 	
 	AUX0 <= ("0000" & ENTRADASENHA(2 TO 5));
@@ -134,4 +156,6 @@ begin
 	num1: bcd port map (bcd1, numero1);
 	
 	numA: bcd port map ("00" & storeA, numeroA);
+	
+	lcdhan: LCDHandler port map(masterClock, Sys_ST, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
 end cofre;

@@ -4,9 +4,9 @@ use ieee.std_logic_1164.all;
 entity LCDHandler is 
 	port (
 		clock: in std_logic;
-		storePrint:	in std_logic;
+		--resetPrint:	in std_logic;
 		system_state: in std_logic_vector(0 to 1);
-		busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
+		--busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
 		rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
 		lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0));
 end LCDHandler;
@@ -20,6 +20,9 @@ architecture handle of LCDHandler is
 	signal updateScreen: std_logic;
 	signal enable_write: std_logic;
 	
+	signal busy: std_logic; --unused
+	
+	signal check: std_logic;
 	component lcd_controller is
 		PORT(
 		 clk        : IN    STD_LOGIC;  --system clock
@@ -30,6 +33,8 @@ architecture handle of LCDHandler is
 		 rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
 		 lcd_data   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0));
 	end component;
+	
+	signal lastState: std_logic_vector(1 downto 0) := "00";
 begin
 	--con_bus <= con_rs & con_rw & con_data;
 	lcdMaster: lcd_controller port map (clock, '1', con_en, con_bus, con_busy, rw, rs, e, lcd_dataout);
@@ -53,39 +58,34 @@ begin
 	process(clock, system_state)
 		variable cpos: integer range 0 to 20 := 0;
 	begin
-		
-		--if (system_state(0)'event and clearScreen = '1') then
-		
-		if (clock'event and clock = '1') then --and updateScreen'event
-			if (storePrint = '0') then 
-				con_en <= '1';
-				con_bus <= "0000000001";
-				cpos := 0;
-				con_en <= '0';
-			elsif (con_busy = '0' and con_en = '0' and cpos < 20) then 
+		if (clock'event and clock = '1') then
+			if (con_busy = '0' and con_en = '0') then 
+				if (not (system_state = lastState)) then
+					cpos := 0;
+				end if;
+				
 				con_en <= '1';
 				if (cpos < 20) then 
 					cpos := cpos + 1;
-				--else
-					--cpos := 0;
 				end if;
 				if (system_state = "00") then --AWAITING INPUT
 					case cpos is
-						when 1 =>  con_bus <= "1001001001"; --I
-						when 2 =>  con_bus <= "1001101110"; --n
-						when 3 =>  con_bus <= "1001110011"; --s
-						when 4 =>  con_bus <= "1001101001"; --i
-						when 5 =>  con_bus <= "1001110010"; --r
-						when 6 =>  con_bus <= "1001100001"; --a
-						when 7 =>  con_bus <= "1000100000"; -- 
-						when 8 =>  con_bus <= "1001100001"; --a
-						when 9 =>  con_bus <= "1000100000"; -- 
-						when 10 => con_bus <= "1001110011"; --s
-						when 11 => con_bus <= "1001100101"; --e
-						when 12 => con_bus <= "1001101110"; --n
-						when 13 => con_bus <= "1001101000"; --h
-						when 14 => con_bus <= "1001100001"; --a
-						when 15 => con_bus <= "1000100000"; -- 
+						when 1 =>  con_bus <= "0000000010"; --reset
+						--when 1 =>  con_bus <= "1001001001"; --test
+						when 2 =>  con_bus <= "1001001001"; --I
+						when 3 =>  con_bus <= "1001101110"; --n
+						when 4 =>  con_bus <= "1001110011"; --s
+						when 5 =>  con_bus <= "1001101001"; --i
+						when 6 =>  con_bus <= "1001110010"; --r
+						when 7 =>  con_bus <= "1001100001"; --a
+						when 8 =>  con_bus <= "1000100000"; -- 
+						when 9 =>  con_bus <= "1001100001"; --a
+						when 10 => con_bus <= "1000100000"; -- 
+						when 11 => con_bus <= "1001110011"; --s
+						when 12 => con_bus <= "1001100101"; --e
+						when 13 => con_bus <= "1001101110"; --n
+						when 14 => con_bus <= "1001101000"; --h
+						when 15 => con_bus <= "1001100001"; --a
 						when 16 => con_bus <= "1000100000"; -- 
 						when 17 => con_bus <= "1000100000"; -- 
 						when 18 => con_bus <= "1000100000"; -- 
@@ -100,26 +100,26 @@ begin
 							--cpos := 0;
 					end case;
 				end if;
-				if (system_state = "01") then --INCORRECT PASS
+				if (system_state = "01") then --NEW PASS
 					case cpos is
-						when 1 =>  con_bus <= "1001010011";	--S
-						when 2 =>  con_bus <= "1001100101"; --e
+						when 1 =>  con_bus <= "0000000010"; --reset
+						when 2 =>  con_bus <= "1001001001"; --I
 						when 3 =>  con_bus <= "1001101110"; --n
-						when 4 =>  con_bus <= "1001101000"; --h
-						when 5 =>  con_bus <= "1001100001"; --a
-						when 6 =>  con_bus <= "1000100000"; -- 
-						when 7 =>  con_bus <= "1001101001"; --i
-						when 8 =>  con_bus <= "1001101110"; --n
-						when 9 =>  con_bus <= "1001110110"; --v
-						when 10 => con_bus <= "1001100001"; --a
-						when 11 => con_bus <= "1001101100"; --l
-						when 12 => con_bus <= "1001101001"; --i
-						when 13 => con_bus <= "1001100100"; --d
-						when 14 => con_bus <= "1001100001"; --a
-						when 15 => con_bus <= "1000100000"; -- 
-						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "1000100000"; -- 
-						when 18 => con_bus <= "1000100000"; -- 
+						when 4 =>  con_bus <= "1001110011"; --s
+						when 5 =>  con_bus <= "1001101001"; --i
+						when 6 =>  con_bus <= "1001110010"; --r
+						when 7 =>  con_bus <= "1001100001"; --a
+						when 8 =>  con_bus <= "1000100000"; -- 
+						when 9 =>  con_bus <= "1001101110"; --n
+						when 10 => con_bus <= "1001101111"; --o
+						when 11 => con_bus <= "1001110110"; --v
+						when 12 => con_bus <= "1001100001"; --a
+						when 13 => con_bus <= "1000100000"; -- 
+						when 14 => con_bus <= "1001110011"; --s
+						when 15 => con_bus <= "1001100101"; --e
+						when 16 => con_bus <= "1001101110"; --n
+						when 17 => con_bus <= "1001101000"; --h
+						when 18 => con_bus <= "1001100001"; --a
 						--when 15 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
@@ -132,20 +132,21 @@ begin
 				end if;
 				if (system_state = "10") then --LOGIN OK
 					case cpos is
-						when 1 =>  con_bus <= "1001000010"; --B
-						when 2 =>  con_bus <= "1001100101"; --e
-						when 3 =>  con_bus <= "1001101101"; --m
-						when 4 =>  con_bus <= "1000100000"; -- 
-						when 5 =>  con_bus <= "1001110110"; --v
-						when 6 =>  con_bus <= "1001101001"; --i
-						when 7 =>  con_bus <= "1001101110"; --n
-						when 8 =>  con_bus <= "1001100100"; --d
-						when 9 =>  con_bus <= "1001101111"; --o
-						when 10 => con_bus <= "1000101000"; --( 
-						when 11 => con_bus <= "1001100001"; --a
-						when 12 => con_bus <= "1000101001"; --)
-						when 13 => con_bus <= "1000100001"; --!
-						when 14 => con_bus <= "1000100000"; -- 
+						when 1 =>  con_bus <= "0000000010"; --reset
+						--when 1 =>  con_bus <= "1001000010"; --test
+						when 2 =>  con_bus <= "1001000010"; --B
+						when 3 =>  con_bus <= "1001100101"; --e
+						when 4 =>  con_bus <= "1001101101"; --m
+						when 5 =>  con_bus <= "1000100000"; -- 
+						when 6 =>  con_bus <= "1001110110"; --v
+						when 7 =>  con_bus <= "1001101001"; --i
+						when 8 =>  con_bus <= "1001101110"; --n
+						when 9 =>  con_bus <= "1001100100"; --d
+						when 10 => con_bus <= "1001101111"; --o
+						when 11 => con_bus <= "1000101000"; --( 
+						when 12 => con_bus <= "1001100001"; --a
+						when 13 => con_bus <= "1000101001"; --)
+						when 14 => con_bus <= "1000100001"; --!
 						when 15 => con_bus <= "1000100000"; -- 
 						when 16 => con_bus <= "1000100000"; -- 
 						when 17 => con_bus <= "1000100000"; -- 
@@ -162,15 +163,15 @@ begin
 				end if;
 				if (system_state = "11") then --LOCKDOWN
 					case cpos is 
-						when 1 =>  con_bus <= "1001010100"; --T
-						when 2 =>  con_bus <= "1001110010"; --r
-						when 3 =>  con_bus <= "1001100001"; --a
-						when 4 =>  con_bus <= "1001110110"; --v
-						when 5 =>  con_bus <= "1001100001"; --a
-						when 6 =>  con_bus <= "1001100100"; --d
-						when 7 =>  con_bus <= "1001101111"; --o
-						when 8 =>  con_bus <= "1000100001"; --!
-						when 9  => con_bus <= "1000100000"; -- 
+						when 1 =>  con_bus <= "0000000010"; --reset
+						when 2 =>  con_bus <= "1001010100"; --T
+						when 3 =>  con_bus <= "1001110010"; --r
+						when 4 =>  con_bus <= "1001100001"; --a
+						when 5 =>  con_bus <= "1001110110"; --v
+						when 6 =>  con_bus <= "1001100001"; --a
+						when 7 =>  con_bus <= "1001100100"; --d
+						when 8 =>  con_bus <= "1001101111"; --o
+						when 9 =>  con_bus <= "1000100001"; --!
 						when 10 => con_bus <= "1000100000"; -- 
 						when 11 => con_bus <= "1000100000"; -- 
 						when 12 => con_bus <= "1000100000"; -- 
@@ -193,9 +194,7 @@ begin
 			else 
 				con_en <= '0';
 			end if;
-		--else 
-			--cpos := 0;
-			--con_en <= '0';
+		lastState <= system_state;
 		end if;
 	end process;
 end handle;
