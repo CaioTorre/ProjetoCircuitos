@@ -18,6 +18,7 @@ entity projeto is
 			numero0:		out std_logic_vector(0 to 6);
 			numero1: 	out std_logic_vector(0 to 6);
 			
+			numeroA:		out std_logic_vector(0 to 6);
 			lcd_rw, lcd_rs, lcd_e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
 			lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0);
 			
@@ -47,6 +48,7 @@ architecture cofre of projeto is
 	signal bcd0, bcd1:	std_logic_vector(0 to 3);
 	signal AUX0, AUX1, AUX2, aux3, AUXILIAR, RESULT: std_logic_vector(0 to 7);
 
+	signal storeA: std_logic_vector(0 to 1) := "00";
 begin
 	compareLast:	compare port map(entradaSENHA, lastK, PassEQ);
 	compareKey:		compare port map(entradaSENHA, storeK, PassOK);
@@ -109,12 +111,19 @@ begin
 					END IF;
 			END CASE;
 		END IF;
+		
+		case (attempts) is
+			when 0 => storeA <= "00";
+			when 1 => storeA <= "01";
+			when 2 => storeA <= "10";
+			when others => storeA <= "11";
+		end case;
 	END PROCESS;
 	
 	AUX0 <= ("0000" & ENTRADASENHA(2 TO 5));
 	AUX2 <= AUX0 + 6 WHEN (AUX0 > 9) ELSE AUX0;
 	AUX1 <= AUX2 + "00110010" WHEN (ENTRADASENHA(0) = '1') ELSE AUX2;
-	AUX3 <= AUX1 + 6 WHEN (AUX1(4 to 7) > 9) ELSE AUX1;
+	aux3 <= aux1 + 6 WHEN (AUX1(4 to 7) > 9) ELSE AUX1;
 	AUXILIAR <= AUX3 + "00010110" WHEN (ENTRADASENHA(1) = '1') ELSE AUX3;
 	RESULT <= AUXILIAR + 6 WHEN AUXILIAR(4 TO 7) > 9 ELSE AUXILIAR;
 	
@@ -123,4 +132,6 @@ begin
 	
 	num0: bcd port map (bcd0, numero0);
 	num1: bcd port map (bcd1, numero1);
+	
+	numA: bcd port map ("00" & storeA, numeroA);
 end cofre;
