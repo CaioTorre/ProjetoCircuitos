@@ -25,6 +25,10 @@ begin
 					"0001111" when "0111",
 					"0000000" when "1000",
 					"0000100" when "1001",
+					
+					"1111111" when "1010", --Display off
+					"1111110" when "1011", --Display "-"
+					
 					"1111110" when others;
 end decoder;
 			

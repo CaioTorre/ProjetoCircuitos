@@ -29,6 +29,9 @@ architecture cofre of projeto is
 	TYPE CONTROL IS (waiting_input, test_input, login_success, read_new_key, out_of_attempts);
 	SIGNAL STATE: CONTROL;
 
+	TYPE BCDCTRL IS (show_input, clear_bcd, show_error);
+	SIGNAL BCDSTATE: BCDCTRL := clear_bcd;
+	
 	component bcd
 		port (code: in  std_logic_vector(0 to 3);
 				leds: out std_logic_vector(0 to 6));
@@ -54,6 +57,7 @@ architecture cofre of projeto is
 	signal lastK:	std_logic_vector(0 to 5) := "000000";
 	signal storeK:	std_logic_vector(0 to 5) := "000000";
 
+	--signal showKeyState:	std_logic_vector(0 to 1);
 	signal bcd0, bcd1:	std_logic_vector(0 to 3);
 	signal AUX0, AUX1, AUX2, aux3, AUXILIAR, RESULT: std_logic_vector(0 to 7);
 
@@ -87,6 +91,7 @@ begin
 					IF (PassOK = '1') THEN 
 						state <= login_success;
 					ELSE
+						BCDSTATE <= show_error;
 						lastK <= entradaSENHA;
 						attempts := attempts + 1;
 						IF (attempts < 3) THEN 
@@ -97,12 +102,15 @@ begin
 					END IF;
 					
 				WHEN login_success =>
+					BCDSTATE <= show_input;
 					Sys_ST <= "10";
 					ledEstado <= '1';
 					attempts := 0;
 					IF (chaveE = '0') THEN 
+						BCDSTATE <= clear_bcd;
 						ledEstado <= '0';
 						state <= waiting_input;
+						
 					ELSIF (chaveS = '1') THEN 
 						state <= read_new_key;
 					END IF;
@@ -110,7 +118,9 @@ begin
 				WHEN read_new_key =>
 					Sys_ST <= "01";
 					IF (chaveE = '0') THEN 
+						BCDSTATE <= clear_bcd;
 						state <= waiting_input;
+						
 					ELSIF (chaveS = '0') THEN
 						storeK <= entradaSENHA;
 						state <= login_success;
@@ -139,18 +149,60 @@ begin
 			attempts := 0;
 			ledErro <= '0';
 			ledEstado <= '0';
+			BCDSTATE <= clear_bcd;
 		end if;
+		
+		case BCDSTATE is
+			when show_input => 
+				AUX0 <= ("0000" & ENTRADASENHA(2 TO 5));
+				
+				IF (AUX0 > 9) THEN
+					AUX2 <= AUX0 + 6;
+				ELSE 
+					AUX2 <= AUX0;
+				END IF;
+				--AUX2 <= AUX0 + 6 WHEN (AUX0 > 9) ELSE AUX0;
+				
+				IF (ENTRADASENHA(0) = '1') THEN
+					AUX1 <= AUX2 + "00110010";
+				ELSE
+					AUX1 <= AUX2;
+				END IF;
+				--AUX1 <= AUX2 + "00110010" WHEN (ENTRADASENHA(0) = '1') ELSE AUX2;
+				
+				IF (AUX1(4 TO 7) > 9) THEN
+					AUX3 <= AUX1 + 6;
+				ELSE
+					AUX3 <= AUX1;
+				END IF;
+				--aux3 <= aux1 + 6 WHEN (AUX1(4 to 7) > 9) ELSE AUX1;
+				
+				IF (ENTRADASENHA(1) = '1') THEN
+					AUXILIAR <= AUX3 + "00010110";
+				ELSE
+					AUXILIAR <= AUX3;
+				END IF;
+				--AUXILIAR <= AUX3 + "00010110" WHEN (ENTRADASENHA(1) = '1') ELSE AUX3;
+				
+				IF (AUXILIAR(4 TO 7) > 9) THEN
+					RESULT <= AUXILIAR + 6;
+				ELSE
+					RESULT <= AUXILIAR;
+				END IF;
+				--RESULT <= AUXILIAR + 6 WHEN AUXILIAR(4 TO 7) > 9 ELSE AUXILIAR;
+				
+				BCD0 <= RESULT(4 TO 7);
+				BCD1 <= RESULT(0 TO 3);
+				
+			when clear_bcd =>		--Clear display
+				BCD0 <= "1010";
+				BCD1 <= "1010";
+				
+			when show_error =>	--Display "--"
+				BCD0 <= "1011";
+				BCD1 <= "1011";
+		end case;
 	END PROCESS;
-	
-	AUX0 <= ("0000" & ENTRADASENHA(2 TO 5));
-	AUX2 <= AUX0 + 6 WHEN (AUX0 > 9) ELSE AUX0;
-	AUX1 <= AUX2 + "00110010" WHEN (ENTRADASENHA(0) = '1') ELSE AUX2;
-	aux3 <= aux1 + 6 WHEN (AUX1(4 to 7) > 9) ELSE AUX1;
-	AUXILIAR <= AUX3 + "00010110" WHEN (ENTRADASENHA(1) = '1') ELSE AUX3;
-	RESULT <= AUXILIAR + 6 WHEN AUXILIAR(4 TO 7) > 9 ELSE AUXILIAR;
-	
-	BCD0 <= RESULT(4 TO 7);
-	BCD1 <= RESULT(0 TO 3);
 	
 	num0: bcd port map (bcd0, numero0);
 	num1: bcd port map (bcd1, numero1);
