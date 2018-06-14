@@ -1,0 +1,71 @@
+set_location_assignment PIN_AB28 -to chaveE
+set_location_assignment PIN_AC28 -to chaveS
+set_location_assignment PIN_Y23 -to entradaSENHA[0]
+set_location_assignment PIN_Y24 -to entradaSENHA[1]
+set_location_assignment PIN_AA22 -to entradaSENHA[2]
+set_location_assignment PIN_AA23 -to entradaSENHA[3]
+set_location_assignment PIN_AA24 -to entradaSENHA[4]
+set_location_assignment PIN_AB23 -to entradaSENHA[5]
+set_location_assignment PIN_L4 -to lcd_e
+set_location_assignment PIN_M2 -to lcd_rs
+set_location_assignment PIN_H15 -to ledErro
+set_location_assignment PIN_F17 -to ledEstado
+set_location_assignment PIN_AB19 -to numero0[0]
+set_location_assignment PIN_AA19 -to numero0[1]
+set_location_assignment PIN_AG21 -to numero0[2]
+set_location_assignment PIN_AH21 -to numero0[3]
+set_location_assignment PIN_AE19 -to numero0[4]
+set_location_assignment PIN_AF19 -to numero0[5]
+set_location_assignment PIN_AE18 -to numero0[6]
+set_location_assignment PIN_AD18 -to numero1[0]
+set_location_assignment PIN_AC18 -to numero1[1]
+set_location_assignment PIN_AB18 -to numero1[2]
+set_location_assignment PIN_AH19 -to numero1[3]
+set_location_assignment PIN_AG19 -to numero1[4]
+set_location_assignment PIN_AF18 -to numero1[5]
+set_location_assignment PIN_AH18 -to numero1[6]
+set_location_assignment PIN_R24 -to resetStrikes
+set_location_assignment PIN_E21 -to senhaOKLED
+set_location_assignment PIN_M5 -to lcd_dataout[7]
+set_location_assignment PIN_M3 -to lcd_dataout[6]
+set_location_assignment PIN_K2 -to lcd_dataout[5]
+set_location_assignment PIN_K1 -to lcd_dataout[4]
+set_location_assignment PIN_K7 -to lcd_dataout[3]
+set_location_assignment PIN_L2 -to lcd_dataout[2]
+set_location_assignment PIN_L1 -to lcd_dataout[1]
+set_location_assignment PIN_L3 -to lcd_dataout[0]
+set_location_assignment PIN_M1 -to lcd_rw
+set_location_assignment PIN_Y2 -to masterClock
+set_location_assignment PIN_AD17 -to numeroA[0]
+set_location_assignment PIN_AE17 -to numeroA[1]
+set_location_assignment PIN_AG17 -to numeroA[2]
+set_location_assignment PIN_AH17 -to numeroA[3]
+set_location_assignment PIN_AF17 -to numeroA[4]
+set_location_assignment PIN_AG18 -to numeroA[5]
+set_location_assignment PIN_AA14 -to numeroA[6]
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE115F29C7
+set_global_assignment -name TOP_LEVEL_ENTITY projeto
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.0.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "07:50:38  JUNE 08, 2018"
+set_global_assignment -name LAST_QUARTUS_VERSION "18.0.0 Lite Edition"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/upcounter.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/projeto.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/memoryLine.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/LCDHandler.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/lcd_controller.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/latchsr.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/flipflopd.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/compare.vhd"
+set_global_assignment -name VHDL_FILE "../../Downloads/ProjetoCircuitos-LCD (2)/ProjetoCircuitos-LCD/bcd.vhd"

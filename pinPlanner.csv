@@ -1,0 +1,66 @@
+# Copyright (C) 2018  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details.
+
+# Quartus Prime Version 18.0.0 Build 614 04/24/2018 SJ Lite Edition
+# File: C:\Users\Owner\Documents\testProj\pinPlanner.csv
+# Generated on: Wed Jun 13 12:55:34 2018
+
+# Note: The column header names should not be changed if you wish to import this .csv file into the Quartus Prime software.
+
+To,Direction,Location,I/O Bank,VREF Group,Fitter Location,I/O Standard,Reserved,Current Strength,Slew Rate,Differential Pair,Strict Preservation
+chaveE,Input,PIN_AB28,5,B5_N1,PIN_AB28,2.5 V,,,,,
+chaveS,Input,PIN_AC28,5,B5_N2,PIN_AC28,2.5 V,,,,,
+entradaSENHA[0],Input,PIN_Y23,5,B5_N2,PIN_Y23,2.5 V,,,,,
+entradaSENHA[1],Input,PIN_Y24,5,B5_N2,PIN_Y24,2.5 V,,,,,
+entradaSENHA[2],Input,PIN_AA22,5,B5_N2,PIN_AA22,2.5 V,,,,,
+entradaSENHA[3],Input,PIN_AA23,5,B5_N2,PIN_AA23,2.5 V,,,,,
+entradaSENHA[4],Input,PIN_AA24,5,B5_N2,PIN_AA24,2.5 V,,,,,
+entradaSENHA[5],Input,PIN_AB23,5,B5_N2,PIN_AB23,2.5 V,,,,,
+lcd_dataout[7],Output,PIN_M5,1,B1_N2,PIN_M5,2.5 V,,,,,
+lcd_dataout[6],Output,PIN_M3,1,B1_N1,PIN_M3,2.5 V,,,,,
+lcd_dataout[5],Output,PIN_K2,1,B1_N1,PIN_K2,2.5 V,,,,,
+lcd_dataout[4],Output,PIN_K1,1,B1_N1,PIN_K1,2.5 V,,,,,
+lcd_dataout[3],Output,PIN_K7,1,B1_N1,PIN_K7,2.5 V,,,,,
+lcd_dataout[2],Output,PIN_L2,1,B1_N2,PIN_L2,2.5 V,,,,,
+lcd_dataout[1],Output,PIN_L1,1,B1_N2,PIN_L1,2.5 V,,,,,
+lcd_dataout[0],Output,PIN_L3,1,B1_N1,PIN_L3,2.5 V,,,,,
+lcd_e,Output,PIN_L4,1,B1_N1,PIN_L4,2.5 V,,,,,
+lcd_rs,Output,PIN_M2,1,B1_N2,PIN_M2,2.5 V,,,,,
+lcd_rw,Output,PIN_M1,1,B1_N2,PIN_M1,2.5 V,,,,,
+ledErro,Output,PIN_H15,7,B7_N2,PIN_H15,2.5 V,,,,,
+ledEstado,Output,PIN_F17,7,B7_N2,PIN_F17,2.5 V,,,,,
+masterClock,Input,PIN_Y2,2,B2_N0,PIN_Y2,2.5 V,,,,,
+numero0[0],Output,PIN_AB19,4,B4_N0,PIN_AB19,2.5 V,,,,,
+numero0[1],Output,PIN_AA19,4,B4_N0,PIN_AA19,2.5 V,,,,,
+numero0[2],Output,PIN_AG21,4,B4_N2,PIN_AG21,2.5 V,,,,,
+numero0[3],Output,PIN_AH21,4,B4_N2,PIN_AH21,2.5 V,,,,,
+numero0[4],Output,PIN_AE19,4,B4_N1,PIN_AE19,2.5 V,,,,,
+numero0[5],Output,PIN_AF19,4,B4_N1,PIN_AF19,2.5 V,,,,,
+numero0[6],Output,PIN_AE18,4,B4_N2,PIN_AE18,2.5 V,,,,,
+numero1[0],Output,PIN_AD18,4,B4_N1,PIN_AD18,2.5 V,,,,,
+numero1[1],Output,PIN_AC18,4,B4_N1,PIN_AC18,2.5 V,,,,,
+numero1[2],Output,PIN_AB18,4,B4_N0,PIN_AB18,2.5 V,,,,,
+numero1[3],Output,PIN_AH19,4,B4_N2,PIN_AH19,2.5 V,,,,,
+numero1[4],Output,PIN_AG19,4,B4_N2,PIN_AG19,2.5 V,,,,,
+numero1[5],Output,PIN_AF18,4,B4_N1,PIN_AF18,2.5 V,,,,,
+numero1[6],Output,PIN_AH18,4,B4_N2,PIN_AH18,2.5 V,,,,,
+numeroA[0],Output,PIN_AD17,4,B4_N2,PIN_AD17,2.5 V,,,,,
+numeroA[1],Output,PIN_AE17,4,B4_N2,PIN_AE17,2.5 V,,,,,
+numeroA[2],Output,PIN_AG17,4,B4_N2,PIN_AG17,2.5 V,,,,,
+numeroA[3],Output,PIN_AH17,4,B4_N2,PIN_AH17,2.5 V,,,,,
+numeroA[4],Output,PIN_AF17,4,B4_N2,PIN_AF17,2.5 V,,,,,
+numeroA[5],Output,PIN_AG18,4,B4_N2,PIN_AG18,2.5 V,,,,,
+numeroA[6],Output,PIN_AA14,3,B3_N0,PIN_AA14,2.5 V,,,,,
+resetStrikes,Input,PIN_R24,5,B5_N0,PIN_R24,2.5 V,,,,,
+senhaOKLED,Output,PIN_E21,7,B7_N0,PIN_E21,2.5 V,,,,,
