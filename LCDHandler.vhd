@@ -6,6 +6,8 @@ entity LCDHandler is
 		clock: in std_logic;
 		--resetPrint:	in std_logic;
 		system_state: in std_logic_vector(0 to 1);
+		current_number: in std_logic_vector(7 downto 0);
+		LCDReset: in std_logic;
 		--busy       : OUT   STD_LOGIC := '1';  --lcd controller busy/idle feedback
 		rw, rs, e  : OUT   STD_LOGIC;  --read/write, setup/data, and enable for lcd
 		lcd_dataout   : OUT   STD_LOGIC_VECTOR(7 DOWNTO 0));
@@ -35,9 +37,10 @@ architecture handle of LCDHandler is
 	end component;
 	
 	signal lastState: std_logic_vector(1 downto 0) := "00";
+	signal lastNum: std_logic_vector(7 downto 0);
 begin
 	--con_bus <= con_rs & con_rw & con_data;
-	lcdMaster: lcd_controller port map (clock, '1', con_en, con_bus, con_busy, rw, rs, e, lcd_dataout);
+	lcdMaster: lcd_controller port map (clock, LCDReset, con_en, con_bus, con_busy, rw, rs, e, lcd_dataout);
 --	process(system_state(0))
 --	begin
 --		--cpos := 0;
@@ -55,17 +58,17 @@ begin
 			--con_en <= '0';
 		--end if;
 	--end process;
-	process(clock, system_state)
-		variable cpos: integer range 0 to 24 := 0;
+	process(clock, system_state, current_number)
+		variable cpos: integer range 0 to 34 := 0;
 	begin
 		if (clock'event and clock = '1') then
 			if (con_busy = '0' and con_en = '0') then 
-				if (not (system_state = lastState)) then
+				if (not (system_state = lastState) or (not (current_number = lastNum))) then
 					cpos := 0;
 				end if;
 				
 				con_en <= '1';
-				if (cpos < 24) then 
+				if (cpos < 34) then 
 					cpos := cpos + 1;
 				end if;
 				if (system_state = "00") then --AWAITING INPUT
@@ -87,13 +90,23 @@ begin
 						when 14 => con_bus <= "1001101000"; --h
 						when 15 => con_bus <= "1001100001"; --a
 						when 16 => con_bus <= "1000111010"; --:
-						when 17 => con_bus <= "0011000000"; -- newline
-						when 18 => con_bus <= "1000100000"; -- 
-						when 19 => con_bus <= "1000100000"; -- 
-						when 20 => con_bus <= "1000100000"; -- 
-						when 21 => con_bus <= "1000100000"; -- 
-						when 22 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "0011000000"; -- newline
+						when 19 => con_bus <= "1000101000"; --( 
+						when 20 => con_bus <= "100011" & current_number(7 downto 4); -- 
+						when 21 => con_bus <= "100011" & current_number(3 downto 0); -- 
+						when 22 => con_bus <= "1000101001"; --)
 						when 23 => con_bus <= "1000100000"; -- 
+						when 24 => con_bus <= "1000100000"; -- 
+						when 25 => con_bus <= "1000100000"; -- 
+						when 26 => con_bus <= "1000100000"; -- 
+						when 27 => con_bus <= "1000100000"; -- 
+						when 28 => con_bus <= "1000100000"; -- 
+						when 29 => con_bus <= "1000100000"; -- 
+						when 30 => con_bus <= "1000100000"; -- 
+						when 31 => con_bus <= "1000100000"; -- 
+						when 32 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; -- 
 						
 						--when 15 => 
 							--updateScreen <= '0'; 
@@ -123,13 +136,23 @@ begin
 						when 14 => con_bus <= "1001100001"; --a
 						when 15 => con_bus <= "1000100000"; -- 
 						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "0011000000"; -- newline
-						when 18 => con_bus <= "1001110011"; --s
-						when 19 => con_bus <= "1001100101"; --e
-						when 20 => con_bus <= "1001101110"; --n
-						when 21 => con_bus <= "1001101000"; --h
-						when 22 => con_bus <= "1001100001"; --a
-						when 23 => con_bus <= "1000111010"; --:
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "0011000000"; -- newline
+						when 19 => con_bus <= "1001110011"; --s
+						when 20 => con_bus <= "1001100101"; --e
+						when 21 => con_bus <= "1001101110"; --n
+						when 22 => con_bus <= "1001101000"; --h
+						when 23 => con_bus <= "1001100001"; --a
+						when 24 => con_bus <= "1000100000"; -- 
+						when 25 => con_bus <= "1000101000"; --( 
+						when 26 => con_bus <= "100011" & current_number(7 downto 4); -- 
+						when 27 => con_bus <= "100011" & current_number(3 downto 0); -- 
+						when 28 => con_bus <= "1000101001"; --)
+						when 29 => con_bus <= "1000100000"; -- 
+						when 30 => con_bus <= "1000100000"; -- 
+						when 31 => con_bus <= "1000100000"; -- 
+						when 32 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; -- 
 						--when 15 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
@@ -159,13 +182,23 @@ begin
 						when 14 => con_bus <= "1000100001"; --!
 						when 15 => con_bus <= "1000100000"; -- 
 						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "0011000000"; -- newline
-						when 18 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "0011000000"; -- newline
 						when 19 => con_bus <= "1000100000"; -- 
 						when 20 => con_bus <= "1000100000"; -- 
 						when 21 => con_bus <= "1000100000"; -- 
 						when 22 => con_bus <= "1000100000"; -- 
 						when 23 => con_bus <= "1000100000"; -- 
+						when 24 => con_bus <= "1000100000"; -- 
+						when 25 => con_bus <= "1000100000"; -- 
+						when 26 => con_bus <= "1000100000"; -- 
+						when 27 => con_bus <= "1000100000"; -- 
+						when 28 => con_bus <= "1000100000"; --
+						when 29 => con_bus <= "1000100000"; -- 
+						when 30 => con_bus <= "1000100000"; -- 
+						when 31 => con_bus <= "1000100000"; -- 
+						when 32 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; -- 
 						--when 14 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
@@ -194,13 +227,23 @@ begin
 						when 14 => con_bus <= "1000100000"; -- 
 						when 15 => con_bus <= "1000100000"; -- 
 						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "0011000000"; -- newline
-						when 18 => con_bus <= "1000100000"; -- 
+						when 17 => con_bus <= "1000100000"; -- 
+						when 18 => con_bus <= "0011000000"; -- newline
 						when 19 => con_bus <= "1000100000"; -- 
 						when 20 => con_bus <= "1000100000"; -- 
 						when 21 => con_bus <= "1000100000"; -- 
 						when 22 => con_bus <= "1000100000"; -- 
 						when 23 => con_bus <= "1000100000"; -- 
+						when 24 => con_bus <= "1000100000"; -- 
+						when 25 => con_bus <= "1000100000"; -- 
+						when 26 => con_bus <= "1000100000"; -- 
+						when 27 => con_bus <= "1000100000"; -- 
+						when 28 => con_bus <= "1000100000"; --
+						when 29 => con_bus <= "1000100000"; -- 
+						when 30 => con_bus <= "1000100000"; -- 
+						when 31 => con_bus <= "1000100000"; -- 
+						when 32 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; -- 
 						--when 9 =>  
 							--updateScreen <= '0'; 
 							--cpos := 0;
@@ -215,6 +258,7 @@ begin
 				con_en <= '0';
 			end if;
 		lastState <= system_state;
+		lastNum <= current_number;
 		end if;
 	end process;
 end handle;
