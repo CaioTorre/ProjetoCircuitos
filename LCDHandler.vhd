@@ -59,7 +59,7 @@ begin
 		--end if;
 	--end process;
 	process(clock, system_state, current_number)
-		variable cpos: integer range 0 to 34 := 0;
+		variable cpos: integer range 0 to 35 := 0;
 	begin
 		if (clock'event and clock = '1') then
 			if (con_busy = '0' and con_en = '0') then 
@@ -68,7 +68,7 @@ begin
 				end if;
 				
 				con_en <= '1';
-				if (cpos < 34) then 
+				if (cpos < 35) then 
 					cpos := cpos + 1;
 				end if;
 				if (system_state = "00") then --AWAITING INPUT
@@ -107,6 +107,7 @@ begin
 						when 31 => con_bus <= "1000100000"; -- 
 						when 32 => con_bus <= "1000100000"; -- 
 						when 33 => con_bus <= "1000100000"; -- 
+						when 34 => con_bus <= "1000100000"; --
 						
 						--when 15 => 
 							--updateScreen <= '0'; 
@@ -152,7 +153,8 @@ begin
 						when 30 => con_bus <= "1000100000"; -- 
 						when 31 => con_bus <= "1000100000"; -- 
 						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; --
+						when 34 => con_bus <= "1000100000"; --	
 						--when 15 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
@@ -198,7 +200,8 @@ begin
 						when 30 => con_bus <= "1000100000"; -- 
 						when 31 => con_bus <= "1000100000"; -- 
 						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; --
+						when 34 => con_bus <= "1000100000"; --
 						--when 14 => 
 							--updateScreen <= '0'; 
 							--cpos := 0;
@@ -243,11 +246,13 @@ begin
 						when 30 => con_bus <= "1000100000"; -- 
 						when 31 => con_bus <= "1000100000"; -- 
 						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; -- 
+						when 33 => con_bus <= "1000100000"; --
+						when 34 => con_bus <= "1000100000"; --
 						--when 9 =>  
 							--updateScreen <= '0'; 
 							--cpos := 0;
 						--when 9 => cpos := 0;
+						
 						when others => 
 							con_en <= '0';-- cpos := 0;
 							--updateScreen <= '0'; 

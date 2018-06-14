@@ -8,7 +8,7 @@ entity stabilizer is
 end stabilizer;
 
 architecture stab of stabilizer is 
-	constant trigger : integer := 7; -- pCorr > 0.99
+	constant trigger : integer := 50; -- pCorr > 0.99
 begin
 	process(clock)
 		variable count : integer range 0 to trigger := 0;
@@ -30,3 +30,29 @@ begin
 		end if;
 	end process;
 end stab;
+
+--architecture stab of stabilizer is
+--	constant trigger : integer := 50;
+--	signal trail : std_logic := '0';
+--begin
+--	process(clock)
+--		variable count : integer range 0 to trigger := 0;
+--	begin
+--		if (clock'event and clock = '1') then
+--			if (input = trail) then
+--				if (count < trigger) then
+--					count := count + 1;
+--				end if;
+--			else
+--				trail <= input;
+--				count := 0;
+--			end if;
+--		end if;
+--		
+--		if(count < trigger) then
+--			output <= not input;
+--		else
+--			output <= input;
+--		end if;
+--	end process;
+--end stab;
