@@ -74,7 +74,6 @@ begin
 				if (system_state = "00") then --AWAITING INPUT
 					case cpos is
 						when 1 =>  con_bus <= "0000000010"; --reset
-						--when 1 =>  con_bus <= "1001001001"; --test
 						when 2 =>  con_bus <= "1001001001"; --I
 						when 3 =>  con_bus <= "1001101110"; --n
 						when 4 =>  con_bus <= "1001110011"; --s
@@ -90,33 +89,26 @@ begin
 						when 14 => con_bus <= "1001101000"; --h
 						when 15 => con_bus <= "1001100001"; --a
 						when 16 => con_bus <= "1000111010"; --:
-						when 17 => con_bus <= "1000100000"; -- 
+--						when 17 => con_bus <= "1000100000"; -- 
 						when 18 => con_bus <= "0011000000"; -- newline
 						when 19 => con_bus <= "1000101000"; --( 
 						when 20 => con_bus <= "100011" & current_number(7 downto 4); -- 
 						when 21 => con_bus <= "100011" & current_number(3 downto 0); -- 
 						when 22 => con_bus <= "1000101001"; --)
-						when 23 => con_bus <= "1000100000"; -- 
-						when 24 => con_bus <= "1000100000"; -- 
-						when 25 => con_bus <= "1000100000"; -- 
-						when 26 => con_bus <= "1000100000"; -- 
-						when 27 => con_bus <= "1000100000"; -- 
-						when 28 => con_bus <= "1000100000"; -- 
-						when 29 => con_bus <= "1000100000"; -- 
-						when 30 => con_bus <= "1000100000"; -- 
-						when 31 => con_bus <= "1000100000"; -- 
-						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; -- 
-						when 34 => con_bus <= "1000100000"; --
-						
-						--when 15 => 
-							--updateScreen <= '0'; 
-							--cpos := 0;
-						--when 15 => cpos := 0;
-						when others => 
-							con_en <= '0';
-							--updateScreen <= '0'; 
-							--cpos := 0;
+--						when 23 => con_bus <= "1000100000"; -- 
+--						when 24 => con_bus <= "1000100000"; -- 
+--						when 25 => con_bus <= "1000100000"; -- 
+--						when 26 => con_bus <= "1000100000"; -- 
+--						when 27 => con_bus <= "1000100000"; -- 
+--						when 28 => con_bus <= "1000100000"; -- 
+--						when 29 => con_bus <= "1000100000"; -- 
+--						when 30 => con_bus <= "1000100000"; -- 
+--						when 31 => con_bus <= "1000100000"; -- 
+--						when 32 => con_bus <= "1000100000"; -- 
+--						when 33 => con_bus <= "1000100000"; -- 
+--						when 34 => con_bus <= "1000100000"; --
+						when 35 => con_en  <= '0';
+						when others => con_bus <= "1000100000";
 					end case;
 				end if;
 				if (system_state = "01") then --NEW PASS
@@ -135,9 +127,9 @@ begin
 						when 12 => con_bus <= "1001101111"; --o
 						when 13 => con_bus <= "1001110110"; --v
 						when 14 => con_bus <= "1001100001"; --a
-						when 15 => con_bus <= "1000100000"; -- 
-						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "1000100000"; -- 
+--						when 15 => con_bus <= "1000100000"; -- 
+--						when 16 => con_bus <= "1000100000"; -- 
+--						when 17 => con_bus <= "1000100000"; -- 
 						when 18 => con_bus <= "0011000000"; -- newline
 						when 19 => con_bus <= "1001110011"; --s
 						when 20 => con_bus <= "1001100101"; --e
@@ -149,20 +141,14 @@ begin
 						when 26 => con_bus <= "100011" & current_number(7 downto 4); -- 
 						when 27 => con_bus <= "100011" & current_number(3 downto 0); -- 
 						when 28 => con_bus <= "1000101001"; --)
-						when 29 => con_bus <= "1000100000"; -- 
-						when 30 => con_bus <= "1000100000"; -- 
-						when 31 => con_bus <= "1000100000"; -- 
-						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; --
-						when 34 => con_bus <= "1000100000"; --	
-						--when 15 => 
-							--updateScreen <= '0'; 
-							--cpos := 0;
-						--when 15 => cpos := 0;
-						when others => 
-							con_en <= '0';
-							--updateScreen <= '0'; 
-							--cpos := 0;
+--						when 29 => con_bus <= "1000100000"; -- 
+--						when 30 => con_bus <= "1000100000"; -- 
+--						when 31 => con_bus <= "1000100000"; -- 
+--						when 32 => con_bus <= "1000100000"; -- 
+--						when 33 => con_bus <= "1000100000"; --
+--						when 34 => con_bus <= "1000100000"; --	
+						when 35 => con_en <= '0';
+						when others => con_bus <= "1000100000";
 					end case;
 				end if;
 				if (system_state = "10") then --LOGIN OK
@@ -182,34 +168,28 @@ begin
 						when 12 => con_bus <= "1001100001"; --a
 						when 13 => con_bus <= "1000101001"; --)
 						when 14 => con_bus <= "1000100001"; --!
-						when 15 => con_bus <= "1000100000"; -- 
-						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "1000100000"; -- 
+--						when 15 => con_bus <= "1000100000"; -- 
+--						when 16 => con_bus <= "1000100000"; -- 
+--						when 17 => con_bus <= "1000100000"; -- 
 						when 18 => con_bus <= "0011000000"; -- newline
-						when 19 => con_bus <= "1000100000"; -- 
-						when 20 => con_bus <= "1000100000"; -- 
-						when 21 => con_bus <= "1000100000"; -- 
-						when 22 => con_bus <= "1000100000"; -- 
-						when 23 => con_bus <= "1000100000"; -- 
-						when 24 => con_bus <= "1000100000"; -- 
-						when 25 => con_bus <= "1000100000"; -- 
-						when 26 => con_bus <= "1000100000"; -- 
-						when 27 => con_bus <= "1000100000"; -- 
-						when 28 => con_bus <= "1000100000"; --
-						when 29 => con_bus <= "1000100000"; -- 
-						when 30 => con_bus <= "1000100000"; -- 
-						when 31 => con_bus <= "1000100000"; -- 
-						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; --
-						when 34 => con_bus <= "1000100000"; --
-						--when 14 => 
-							--updateScreen <= '0'; 
-							--cpos := 0;
-						--when 14 => cpos := 0;
-						when others => 
-							con_en <= '0';
-							--updateScreen <= '0'; 
-							--cpos := 0;
+--						when 19 => con_bus <= "1000100000"; -- 
+--						when 20 => con_bus <= "1000100000"; -- 
+--						when 21 => con_bus <= "1000100000"; -- 
+--						when 22 => con_bus <= "1000100000"; -- 
+--						when 23 => con_bus <= "1000100000"; -- 
+--						when 24 => con_bus <= "1000100000"; -- 
+--						when 25 => con_bus <= "1000100000"; -- 
+--						when 26 => con_bus <= "1000100000"; -- 
+--						when 27 => con_bus <= "1000100000"; -- 
+--						when 28 => con_bus <= "1000100000"; --
+--						when 29 => con_bus <= "1000100000"; -- 
+--						when 30 => con_bus <= "1000100000"; -- 
+--						when 31 => con_bus <= "1000100000"; -- 
+--						when 32 => con_bus <= "1000100000"; -- 
+--						when 33 => con_bus <= "1000100000"; --
+--						when 34 => con_bus <= "1000100000"; --
+						when 35 => con_en <= '0';
+						when others => con_bus <= "1000100000";
 					end case;
 				end if;
 				if (system_state = "11") then --LOCKDOWN
@@ -223,40 +203,33 @@ begin
 						when 7 =>  con_bus <= "1001100100"; --d
 						when 8 =>  con_bus <= "1001101111"; --o
 						when 9 =>  con_bus <= "1000100001"; --!
-						when 10 => con_bus <= "1000100000"; -- 
-						when 11 => con_bus <= "1000100000"; -- 
-						when 12 => con_bus <= "1000100000"; -- 
-						when 13 => con_bus <= "1000100000"; -- 
-						when 14 => con_bus <= "1000100000"; -- 
-						when 15 => con_bus <= "1000100000"; -- 
-						when 16 => con_bus <= "1000100000"; -- 
-						when 17 => con_bus <= "1000100000"; -- 
+--						when 10 => con_bus <= "1000100000"; -- 
+--						when 11 => con_bus <= "1000100000"; -- 
+--						when 12 => con_bus <= "1000100000"; -- 
+--						when 13 => con_bus <= "1000100000"; -- 
+--						when 14 => con_bus <= "1000100000"; -- 
+--						when 15 => con_bus <= "1000100000"; -- 
+--						when 16 => con_bus <= "1000100000"; -- 
+--						when 17 => con_bus <= "1000100000"; -- 
 						when 18 => con_bus <= "0011000000"; -- newline
-						when 19 => con_bus <= "1000100000"; -- 
-						when 20 => con_bus <= "1000100000"; -- 
-						when 21 => con_bus <= "1000100000"; -- 
-						when 22 => con_bus <= "1000100000"; -- 
-						when 23 => con_bus <= "1000100000"; -- 
-						when 24 => con_bus <= "1000100000"; -- 
-						when 25 => con_bus <= "1000100000"; -- 
-						when 26 => con_bus <= "1000100000"; -- 
-						when 27 => con_bus <= "1000100000"; -- 
-						when 28 => con_bus <= "1000100000"; --
-						when 29 => con_bus <= "1000100000"; -- 
-						when 30 => con_bus <= "1000100000"; -- 
-						when 31 => con_bus <= "1000100000"; -- 
-						when 32 => con_bus <= "1000100000"; -- 
-						when 33 => con_bus <= "1000100000"; --
-						when 34 => con_bus <= "1000100000"; --
-						--when 9 =>  
-							--updateScreen <= '0'; 
-							--cpos := 0;
-						--when 9 => cpos := 0;
-						
-						when others => 
-							con_en <= '0';-- cpos := 0;
-							--updateScreen <= '0'; 
-							--cpos := 0;
+--						when 19 => con_bus <= "1000100000"; -- 
+--						when 20 => con_bus <= "1000100000"; -- 
+--						when 21 => con_bus <= "1000100000"; -- 
+--						when 22 => con_bus <= "1000100000"; -- 
+--						when 23 => con_bus <= "1000100000"; -- 
+--						when 24 => con_bus <= "1000100000"; -- 
+--						when 25 => con_bus <= "1000100000"; -- 
+--						when 26 => con_bus <= "1000100000"; -- 
+--						when 27 => con_bus <= "1000100000"; -- 
+--						when 28 => con_bus <= "1000100000"; --
+--						when 29 => con_bus <= "1000100000"; -- 
+--						when 30 => con_bus <= "1000100000"; -- 
+--						when 31 => con_bus <= "1000100000"; -- 
+--						when 32 => con_bus <= "1000100000"; -- 
+--						when 33 => con_bus <= "1000100000"; --
+--						when 34 => con_bus <= "1000100000"; --
+						when 35 => con_en <= '0';
+						when others => con_bus <= "1000100000";
 					end case;
 				end if;
 			else 

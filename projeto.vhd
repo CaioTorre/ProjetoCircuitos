@@ -9,6 +9,7 @@ entity projeto is
 			chaveS: 			in std_logic;
 			
 			resetStrikes:	in std_logic;
+			rebootLCD:		in std_logic;
 			
 			masterClock: 	in std_logic;
 			
@@ -69,6 +70,7 @@ architecture cofre of projeto is
 	signal bcd0, bcd1:	std_logic_vector(0 to 3);
 	signal bcd0t, bcd1t:	std_logic_vector(0 to 3);
 	signal aux0, AUX1, AUX2, aux3, AUXILIAR, RESULT: std_logic_vector(0 to 7);
+	signal aux_inp: std_logic_vector(0 to 7);
 	
 	signal storeA: std_logic_vector(0 to 1) := "00";
 	
@@ -77,25 +79,40 @@ architecture cofre of projeto is
 	SIGNAL chaveE_STABLE: STD_LOGIC;
 	SIGNAL chaveS_STABLE: STD_LOGIC;
 	SIGNAL keyInp_STABLE: STD_LOGIC_VECTOR(0 TO 5);
+--	SIGNAL STABILIZER_MS: STD_LOGIC_VECTOR(0 TO 7) := "00000000";
 begin
 	compareLast:	compare port map(keyInp_STABLE, lastK, PassEQ);
 	compareKey:		compare port map(keyInp_STABLE, storeK, PassOK);
 	
-	stabilizeE: stabilizer port map(chaveE,				masterClock, chaveE_STABLE);
-	stabilizeS: stabilizer port map(not chaveS,			masterClock, chaveS_STABLE);
 	stabilize0: stabilizer port map(entradaSENHA(0),	masterClock, keyInp_STABLE(0));
 	stabilize1: stabilizer port map(entradaSENHA(1),	masterClocK, keyInp_STABLE(1));
 	stabilize2: stabilizer port map(entradaSENHA(2),	masterClock, keyInp_STABLE(2));
 	stabilize3: stabilizer port map(entradaSENHA(3),	masterClock, keyInp_STABLE(3));
 	stabilize4: stabilizer port map(entradaSENHA(4),	masterClock, keyInp_STABLE(4));
 	stabilize5: stabilizer port map(entradaSENHA(5),	masterClock, keyInp_STABLE(5));
+	stabilizeE: stabilizer port map(chaveE,				masterClock, chaveE_STABLE);
+	stabilizeS: stabilizer port map(not chaveS,			masterClock, chaveS_STABLE);
+	
+--	STABILIZER_MS(0) <= keyInp_STABLE(0);
+--	STABILIZER_MS(1) <= keyInp_STABLE(1);
+--	STABILIZER_MS(2) <= keyInp_STABLE(2);
+--	STABILIZER_MS(3) <= keyInp_STABLE(3);
+--	STABILIZER_MS(4) <= keyInp_STABLE(4);
+--	STABILIZER_MS(5) <= keyInp_STABLE(5);
+--	STABILIZER_MS(6) <= chaveE_STABLE;
+--	STABILIZER_MS(7) <= chaveS_STABLE;
 	
 	senhaOKLED <= PassOK;
 	PROCESS(masterClock)
 		VARIABLE attempts : INTEGER := 0;
 		VARIABLE curr_ite  : INTEGER := 0;
+		VARIABLE clk_cycl : INTEGER RANGE 0 TO 1000;
 	BEGIN
 		IF(masterClock'EVENT and masterClock = '1') THEN
+			if clk_cycl < 1000 then
+				clk_cycl := clk_cycl + 1;
+			else
+				clk_cycl := 0;
 			CASE state IS 
 				WHEN waiting_input =>
 					Sys_ST <= "00";
@@ -105,8 +122,8 @@ begin
 						lastE <= '1';
 					ELSIF (chaveE_STABLE = '1' and PassEQ = '0') THEN 
 						state <= test_input;
-					END IF;
-					IF (chaveE_STABLE = '0') THEN 
+						lastE <= '1';
+					ELSIF (chaveE_STABLE = '0') THEN 
 						lastE <= '0';
 					END IF;
 					
@@ -175,11 +192,19 @@ begin
 			ledEstado <= '0';
 			BCDSTATE <= clear_bcd;
 		end if;
-			
-		BCD0T <= result(4 TO 7);
-		BCD1T <= result(0 to 3);
 		
-				
+--		aux_inp <= "00" & keyInp_STABLE;
+--		aux2 <= "00001001";
+--		for curr_ite in 0 to 5 loop
+--			if (keyInp_STABLE > aux2) then
+--				aux2 <= aux2 + 10;
+--				aux_inp <= aux_inp + 6;
+--			end if;
+--		end loop;
+--		
+--		BCD1T <= aux_inp(0 to 3);
+--		BCD0T <= aux_inp(4 to 7);
+		
 		case BCDSTATE is
 			when show_input => 
 				BCD0 <= BCD0T;
@@ -193,6 +218,7 @@ begin
 				BCD0 <= "1011";
 				BCD1 <= "1011";
 		end case;
+		end if;
 	END PROCESS;
 	
 	AUX0 <= ("0000" & keyInp_STABLE(2 TO 5));
@@ -201,11 +227,14 @@ begin
 	aux3 <= aux1 + 6 WHEN (AUX1(4 to 7) > 9) ELSE AUX1;
 	AUXILIAR <= AUX3 + "00010110" WHEN (keyInp_STABLE(1) = '1') ELSE AUX3;
 	RESULT <= AUXILIAR + 6 WHEN AUXILIAR(4 TO 7) > 9 ELSE AUXILIAR;
-	
+
+	BCD0T <= result(4 TO 7);
+	BCD1T <= result(0 to 3);
+
 	num0: bcd port map (bcd0, numero0);
 	num1: bcd port map (bcd1, numero1);
 	
 	numA: bcd port map ("00" & storeA, numeroA);
 	
-	lcdhan: LCDHandler port map(masterClock, Sys_ST, bcd1t & bcd0t, resetStrikes, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
+	lcdhan: LCDHandler port map(masterClock, Sys_ST, bcd1t & bcd0t, rebootLCD, lcd_rw, lcd_rs, lcd_e, lcd_dataout);
 end cofre;
